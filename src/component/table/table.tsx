@@ -1,37 +1,43 @@
 import { Table as TableLibrary } from 'antd';
 
 import { order } from '../../types/interfaces/order.interface';
-import { generateColumns } from './columns';
+import { generateColumns } from './generateColumns';
 import Header from './header';
 import './table.scss';
+interface ITable {
+    data: order[];
+    setSearch: React.Dispatch<React.SetStateAction<string>>,
+    setRecord: React.Dispatch<React.SetStateAction<order | undefined>>;
+    toogleCreateOrder: () => void;
+    handleDeleteOrder: (id: string) => void;
+    handleUpdateOrder: (id: string) => void;
+    handlePaymentOrder: (id: string) => void;
+}
 
-const data: order[] = [
-    {
-        id: '1',
-        customer: 'John Brown',
-        phoneNumber: '123',
-        email: 'New York No. 1 Lake Park',
-    },
-    {
-        id: '2',
-        customer: 'Jim Green',
-        email: '123',
-        phoneNumber: 'London No. 1 Lake Park',
-    },
-    {
-        id: '3',
-        customer: 'Joe Black',
-        email: '123',
-        phoneNumber: 'Sydney No. 1 Lake Park',
-    },
-];
+const Table = (props: ITable) => {
+    const {
+        data,
+        setSearch,
+        setRecord,
+        toogleCreateOrder,
+        handleDeleteOrder,
+        handleUpdateOrder,
+        handlePaymentOrder,
+    } = props;
 
-const Table = () => {
-    const columns = generateColumns();
+    const columns = generateColumns(
+        setRecord,
+        handleDeleteOrder,
+        handleUpdateOrder,
+        handlePaymentOrder,
+    );
 
     return (
         <div className='container-table'>
-            <Header />
+            <Header
+                toogleCreateOrder={toogleCreateOrder}
+                setSearch={setSearch}
+            />
             <TableLibrary<order>
                 columns={columns}
                 dataSource={data}

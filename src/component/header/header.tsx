@@ -1,5 +1,5 @@
 import { Avatar } from 'antd';
-import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 
 import './header.scss';
 
