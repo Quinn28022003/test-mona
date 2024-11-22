@@ -1,3 +1,4 @@
+import { EPaymentType } from "../enums/order.enum";
 import { product } from "./product.interface";
 
 export interface order {
@@ -5,5 +6,7 @@ export interface order {
     customer: string;
     email: string;
     phoneNumber: string;
-    products?: product[]
+    products?: product[];
+    paymentMethod: EPaymentType;
+    amountPaid: number;
 }
