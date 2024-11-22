@@ -1,0 +1,22 @@
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+span.anticon.anticon-eye,
+span.anticon.anticon-edit,
+span.anticon.anticon-delete {
+  cursor: pointer;
+  transition: all 0.5s;
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 50%;
+
+  &:hover {
+    background: rgb(224, 224, 224);
+    transition: all 0.5s;
+    border-radius: 50%;
+  }
+}
