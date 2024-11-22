@@ -8,37 +8,13 @@ import { EPaymentType } from '../../types/enums/order.enum';
 
 interface ITable {
     toogleCreateOrder: () => void;
+    data: order[];
 }
 
-const data: order[] = [
-    {
-        id: '1',
-        customer: 'John Brown',
-        phoneNumber: '123',
-        email: 'New York No. 1 Lake Park',
-        paymentMethod: EPaymentType.CASH,
-        amountPaid: 10000
-    },
-    {
-        id: '2',
-        customer: 'Jim Green',
-        email: '123',
-        phoneNumber: 'London No. 1 Lake Park',
-        paymentMethod: EPaymentType.CREDITCARD,
-        amountPaid: 12000
-    },
-    {
-        id: '3',
-        customer: 'Joe Black',
-        email: '123',
-        phoneNumber: 'Sydney No. 1 Lake Park',
-        paymentMethod: EPaymentType.CREDITCARD,
-        amountPaid: 110000
-    },
-];
+
 
 const Table = (props: ITable) => {
-    const { toogleCreateOrder } = props;
+    const { toogleCreateOrder, data } = props;
 
     const columns = generateColumns();
 
