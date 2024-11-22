@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { EPaymentType } from '../../types/enums/order.enum';
+import { order } from '../../types/interfaces/order.interface';
 import { IItem } from '../../types/interfaces/product.interface';
 import TableProducts from '../table-products/table-products';
-import { order } from '../../types/interfaces/order.interface';
 
 const options: IItem[] = [];
 
@@ -13,7 +13,7 @@ for (let i = 10; i < 36; i++) {
     const value = i.toString(36) + i;
     options.push({
         label: `Product: ${value}`,
-        value: uuidv4(),
+        value: value,
     });
 }
 
@@ -26,14 +26,16 @@ const sharedProps: SelectProps = {
 };
 
 interface ICreateOrder {
+    type: 'create' | 'update'
     isOpen: boolean;
     toogle: () => void;
-    setListOrders: React.Dispatch<React.SetStateAction<order[]>>
+    setListOrders: React.Dispatch<React.SetStateAction<order[]>>;
+    record?: order | undefined;
 }
 
 const CreateOrder = (props: ICreateOrder) => {
 
-    const { isOpen, toogle, setListOrders } = props;
+    const { type, isOpen, toogle, setListOrders, record } = props;
 
     const [value, setValue] = useState([]);
     const [paymentMethod, setPaymentMethod] = useState<EPaymentType>();
@@ -45,7 +47,9 @@ const CreateOrder = (props: ICreateOrder) => {
     };
 
     const onFinish = (values: any) => {
-        setListOrders(prev => [...prev, values]);
+        if (type === 'create') {
+            setListOrders(prev => [...prev, { id: uuidv4(), ...values }]);
+        }
         toogle();
     };
 
@@ -54,6 +58,21 @@ const CreateOrder = (props: ICreateOrder) => {
     useEffect(() => {
         if (!isOpen) form.resetFields();
     }, [isOpen])
+
+    useEffect(() => {
+        if (type === 'update') {
+            console.log(record)
+            form.setFieldsValue({
+                customer: record?.customer,
+                email: record?.email,
+                phoneNumber: record?.phoneNumber,
+                paymentMethod,
+                amountPaid: record?.amountPaid,
+                products: record?.products
+            })
+            setPaymentMethod(record?.paymentMethod);
+        }
+    }, [record])
 
     return (
         <Modal

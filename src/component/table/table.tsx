@@ -4,24 +4,39 @@ import { order } from '../../types/interfaces/order.interface';
 import { generateColumns } from './generateColumns';
 import Header from './header';
 import './table.scss';
-import { EPaymentType } from '../../types/enums/order.enum';
-
 interface ITable {
-    toogleCreateOrder: () => void;
     data: order[];
+    setSearch: React.Dispatch<React.SetStateAction<string>>,
+    setRecord: React.Dispatch<React.SetStateAction<order | undefined>>;
+    toogleCreateOrder: () => void;
+    handleDeleteOrder: (id: string) => void;
+    handleUpdateOrder: (id: string) => void;
+    handlePaymentOrder: (id: string) => void;
 }
 
-
-
 const Table = (props: ITable) => {
-    const { toogleCreateOrder, data } = props;
+    const {
+        data,
+        setSearch,
+        setRecord,
+        toogleCreateOrder,
+        handleDeleteOrder,
+        handleUpdateOrder,
+        handlePaymentOrder,
+    } = props;
 
-    const columns = generateColumns();
+    const columns = generateColumns(
+        setRecord,
+        handleDeleteOrder,
+        handleUpdateOrder,
+        handlePaymentOrder,
+    );
 
     return (
         <div className='container-table'>
             <Header
                 toogleCreateOrder={toogleCreateOrder}
+                setSearch={setSearch}
             />
             <TableLibrary<order>
                 columns={columns}
