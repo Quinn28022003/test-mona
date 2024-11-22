@@ -1,10 +1,11 @@
 import { Col, Form, Input, Modal, Radio, RadioChangeEvent, Row, Select, SelectProps } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { EPaymentType } from '../../types/enums/order.enum';
 import { IItem } from '../../types/interfaces/product.interface';
 import TableProducts from '../table-products/table-products';
+import { order } from '../../types/interfaces/order.interface';
 
 const options: IItem[] = [];
 
@@ -27,11 +28,12 @@ const sharedProps: SelectProps = {
 interface ICreateOrder {
     isOpen: boolean;
     toogle: () => void;
+    setListOrders: React.Dispatch<React.SetStateAction<order[]>>
 }
 
 const CreateOrder = (props: ICreateOrder) => {
 
-    const { isOpen, toogle } = props;
+    const { isOpen, toogle, setListOrders } = props;
 
     const [value, setValue] = useState([]);
     const [paymentMethod, setPaymentMethod] = useState<EPaymentType>();
@@ -43,10 +45,15 @@ const CreateOrder = (props: ICreateOrder) => {
     };
 
     const onFinish = (values: any) => {
-        console.log(values);
+        setListOrders(prev => [...prev, values]);
+        toogle();
     };
 
     const onChangeRadio = (e: RadioChangeEvent) => setPaymentMethod(e?.target?.value)
+
+    useEffect(() => {
+        if (!isOpen) form.resetFields();
+    }, [isOpen])
 
     return (
         <Modal
