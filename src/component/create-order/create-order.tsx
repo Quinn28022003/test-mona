@@ -248,7 +248,7 @@ const CreateOrder = (props: ICreateOrder) => {
             dataIndex: 'price',
             key: 'price',
             render: (text, record) => (
-                <Input value={text} onChange={handleChangeInput(record?.id, EProductFields.PRICE)} />
+                <Input value={formatDecimalPrecision(Number(record?.price?.replace(/,/g, '')) * Number(record?.quantity))} onChange={handleChangeInput(record?.id, EProductFields.PRICE)} />
             )
         },
         {
