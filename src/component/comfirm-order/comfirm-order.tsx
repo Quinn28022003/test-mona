@@ -60,7 +60,7 @@ const ComfirmOrder = (props: IComfirmOrder) => {
             title: 'Mã khuyến mãi',
             dataIndex: 'promoCode',
             key: 'promoCode',
-
+            render: (_, record) => <p>{record?.promoCode?.id && `${record?.promoCode?.id} - ${record?.promoCode?.type === 'percentage' ? record?.promoCode?.value + '%' : record?.promoCode?.value} VND`}</p>
         },
     ];
 
@@ -71,11 +71,11 @@ const ComfirmOrder = (props: IComfirmOrder) => {
 
     return (
         <Modal
-            title="Thánh toán"
+            title="Thanh toán đơn hàng"
             open={isOpen}
             onOk={onComfirm}
             onCancel={toogle}
-            okText="Thánh toán"
+            okText="Thanh toán"
             cancelText="Hủy"
             style={{ top: 20 }}
             width={1000}
@@ -102,7 +102,11 @@ const ComfirmOrder = (props: IComfirmOrder) => {
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <FieldText label="Tổng đơn hàng" value={formatDecimalPrecision(Number(data?.amountPaid)) ?? ''} />
+                    <FieldText label="Tổng đơn hàng" value={formatDecimalPrecision(Number(data?.totalAmount)) || "0"} />
+                </Col>
+
+                <Col span={12}>
+                    <FieldText label="Tiền mặt khách đưa" value={formatDecimalPrecision(Number(data?.amountPaid)) || "0"} />
                 </Col>
             </Row>
 

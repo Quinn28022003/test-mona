@@ -9,4 +9,5 @@ export interface order {
     products?: product[];
     paymentMethod: EPaymentType;
     amountPaid: number;
+    totalAmount: number;
 }
