@@ -89,6 +89,7 @@ const CreateOrder = (props: ICreateOrder) => {
 
     const { type, isOpen, toogle, setListOrders, record, listProducts } = props;
 
+    const [totalBalance, setTotalBalance] = useState<string>('');
     const [totalAmount, setTotalAmount] = useState<number>(0);
     const [value, setValue] = useState([]);
     const [paymentMethod, setPaymentMethod] = useState<EPaymentType>();
@@ -120,24 +121,31 @@ const CreateOrder = (props: ICreateOrder) => {
 
     const handleChange = (selectedProductIds: string[]) => {
         const updatedProducts: Record<string, product> = { ...productsSelected };
+
         Object.keys(updatedProducts).forEach((id) => {
             if (!selectedProductIds.includes(id)) {
                 delete updatedProducts[id];
             }
         });
+
         selectedProductIds.forEach((id) => {
             if (!updatedProducts[id]) {
                 const product = listProducts.find((item) => item.id === id);
                 if (product) {
-                    updatedProducts[id] = product;
+                    updatedProducts[id] = {
+                        ...product,
+                        promoCode: undefined,
+                    };
                 }
             }
         });
+
         setProductsSelected(updatedProducts);
         form.setFieldsValue({
             products: Object.keys(updatedProducts),
         });
     };
+
 
     const handleDeleteProduct = (id: string) => {
         const updatedProducts: Record<string, product> = { ...productsSelected };
@@ -149,14 +157,12 @@ const CreateOrder = (props: ICreateOrder) => {
     const handleChangeInput = (id: string, type: EProductFields) => (e: React.ChangeEvent<HTMLInputElement>) => {
 
         const updatedProducts: Record<string, product> = { ...productsSelected };
-        if (updatedProducts && updatedProducts[id] && type === EProductFields.PRICE)
+        if (updatedProducts && updatedProducts[id] && type === EProductFields.PRICE) {
             updatedProducts[id].price = formatDecimalPrecision(Number(e?.target?.value?.replace(/,/g, '')));
-
+            updatedProducts[id].originalPrice = formatDecimalPrecision(Number(e?.target?.value?.replace(/,/g, '')));
+        }
         if (updatedProducts && updatedProducts[id] && type === EProductFields.QUANTITY)
             updatedProducts[id].quantity = formatDecimalPrecision(Number(e?.target?.value?.replace(/,/g, '')));
-
-        if (updatedProducts && updatedProducts[id] && type === EProductFields.PROMOCODE)
-            updatedProducts[id].promoCode = discountCodesMap?.get(e?.target?.value);
 
         setProductsSelected(updatedProducts);
     }
@@ -165,12 +171,18 @@ const CreateOrder = (props: ICreateOrder) => {
         const updatedProducts: Record<string, product> = { ...productsSelected };
         if (updatedProducts && updatedProducts[record?.id] && type === EProductFields.PROMOCODE) {
             updatedProducts[record?.id].promoCode = discountCodesMap?.get(e);
-
             const promoCode = Number(record?.promoCode?.value)
             const isCheck = promoCode < 100;
             const pricePromo = (Number(record?.price?.replace(/,/g, '')) * promoCode) / 100;
             const originalPrice = Number(record?.originalPrice?.replace(/,/g, ''))
             const priceReal = isCheck ? originalPrice - pricePromo : originalPrice - promoCode;
+
+            if (priceReal < 0) {
+                updatedProducts[record?.id].promoCode = undefined;
+                return;
+            }
+
+            updatedProducts[record?.id].promoCode = discountCodesMap?.get(e);
 
             updatedProducts[record?.id].price = promoCode ? formatDecimalPrecision(Number(priceReal?.toString()?.replace(/,/g, ''))) : formatDecimalPrecision(String(originalPrice));
         }
@@ -178,7 +190,11 @@ const CreateOrder = (props: ICreateOrder) => {
     }
 
     const handleChangeAmoutPaid = (e: any) => {
-        if (Number(e.target.value) > totalAmount) setShowNotices(true);
+        if (Number(e.target.value) > totalAmount) {
+            setTotalBalance(formatDecimalPrecision(Number((Number(form?.getFieldValue('amountPaid')) - totalAmount)?.toString()?.replace(/,/g, ''))));
+            setShowNotices(true);
+        }
+
         else setShowNotices(false);
     }
 
@@ -188,6 +204,7 @@ const CreateOrder = (props: ICreateOrder) => {
             setValue([]);
             setProductsSelected({});
             setPaymentMethod(undefined);
+            setShowNotices(false);
         }
     }, [isOpen])
 
@@ -204,6 +221,15 @@ const CreateOrder = (props: ICreateOrder) => {
             setPaymentMethod(record?.paymentMethod);
         }
     }, [record])
+
+
+    useEffect(() => {
+        if (productsSelected) {
+            const selectedProductsArray = Object.values(productsSelected);
+            const total = selectedProductsArray?.reduce((acc, product) => acc + Number(product.price?.replace(/,/g, '')), 0)
+            setTotalAmount(total);
+        }
+    }, [productsSelected]);
 
     const columns: TableProps<product>['columns'] = [
         {
@@ -262,14 +288,6 @@ const CreateOrder = (props: ICreateOrder) => {
     ];
 
     const isCheck = form?.getFieldValue('paymentMethod') === EPaymentType?.CASH;
-
-    useEffect(() => {
-        if (productsSelected) {
-            const selectedProductsArray = Object.values(productsSelected);
-            const total = selectedProductsArray?.reduce((acc, product) => acc + Number(product.price?.replace(/,/g, '')), 0)
-            setTotalAmount(total);
-        }
-    }, [productsSelected]);
 
     return (
         <Modal
@@ -384,7 +402,7 @@ const CreateOrder = (props: ICreateOrder) => {
                     </Col>
                 </Row>
                 {
-                    showNotices && <p className='notices'>Tiền thừa trả khách: {formatDecimalPrecision(Number((Number(form?.getFieldValue('amountPaid')) - totalAmount)?.toString()?.replace(/,/g, ''))) ?? 0} VNĐ</p>
+                    showNotices && <p className='notices'>Tiền thừa trả khách: {totalBalance} VNĐ</p>
                 }
                 <Row>
 
