@@ -7,6 +7,7 @@ import Table from "../component/table/table";
 import { useDebounce } from "../hooks/use-debounce";
 import { order } from "../types/interfaces/order.interface";
 import { product } from "../types/interfaces/product.interface";
+import ComfirmOrderSuccess from "../component/comfirm-order/comfirm-order-success";
 
 const Home = () => {
 
@@ -14,6 +15,7 @@ const Home = () => {
     const [isOpenCreateOrder, setIsOpenCreateOrder] = useState<boolean>(false);
     const [isOpenUpdateOrder, setIsOpenUpdateOrder] = useState<boolean>(false);
     const [isOpenComfirmOrder, setIsOpenComfirmOrder] = useState<boolean>(false);
+    const [isOpenComfirmOrderSuccess, setIsOpenComfirmOrderSuccess] = useState<boolean>(false);
     const [record, setRecord] = useState<order>();
     const [search, setSearch] = useState<string>('');
     const [listProducts] = useState<product[]>([
@@ -145,10 +147,12 @@ const Home = () => {
         }
     ]);
     const searchText = useDebounce(search);
+    const [orderId, setOrderId] = useState<string>('');
 
     const toogleCreateOrder = () => setIsOpenCreateOrder(!isOpenCreateOrder);
     const toogleUpdateOrder = () => setIsOpenUpdateOrder(!isOpenUpdateOrder);
     const toogleComfirmOrder = () => setIsOpenComfirmOrder(!isOpenComfirmOrder);
+    const toogleComfirmOrderSuccess = () => setIsOpenComfirmOrderSuccess(!isOpenComfirmOrderSuccess);
 
     const handleDeleteOrder = (id: string) => setListOrders(prev => [...prev?.filter(item => item.id !== id)]);
 
@@ -157,7 +161,8 @@ const Home = () => {
     }
 
     const handlePaymentOrder = (id: string) => {
-        console.log('id: ', id)
+
+        setOrderId(id);
         toogleComfirmOrder();
     }
 
@@ -165,12 +170,11 @@ const Home = () => {
         setListOrders(prev => [...prev?.filter(item => item.customer?.includes(searchText))]);
     }
 
+
+
     useEffect(() => {
         if (searchText?.trim() !== '') filterData();
     }, [searchText])
-
-
-    console.log('listOrdersL, ', listOrders)
 
     return (
         <>
@@ -204,8 +208,16 @@ const Home = () => {
             />
 
             <ComfirmOrder
+                listOrders={listOrders}
+                orderId={orderId}
                 isOpen={isOpenComfirmOrder}
                 toogle={toogleComfirmOrder}
+                toogleSuccess={toogleComfirmOrderSuccess}
+            />
+
+            <ComfirmOrderSuccess
+                isOpen={isOpenComfirmOrderSuccess}
+                toogle={toogleComfirmOrderSuccess}
             />
         </>
     )

@@ -1,0 +1,24 @@
+.container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative;
+
+  .left {
+    position: absolute;
+    font-size: 12px;
+    font-weight: 800;
+    top: 6px;
+    left: 18px;
+  }
+
+  .right {
+    background-color: rgb(242, 242, 242);
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    font-size: 20px;
+    color: rgb(104, 104, 104);
+  }
+}
