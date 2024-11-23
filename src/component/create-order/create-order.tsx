@@ -112,7 +112,7 @@ const CreateOrder = (props: ICreateOrder) => {
 
     const onFinish = (values: any) => {
         if (type === 'create') {
-            setListOrders(prev => [...prev, { id: uuidv4(), ...values, products: productsSelected, amountPaid: totalAmount }]);
+            setListOrders(prev => [...prev, { id: uuidv4(), ...values, products: productsSelected, totalAmount: totalAmount }]);
         }
         toogle();
     };
