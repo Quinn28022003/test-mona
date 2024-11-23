@@ -2,6 +2,7 @@ import { DeleteOutlined, DollarOutlined, EditOutlined, EyeOutlined } from '@ant-
 
 import './action.scss';
 import { order } from '../../../types/interfaces/order.interface';
+import { Tooltip } from 'antd';
 interface IActions {
     record: order;
     setRecord: React.Dispatch<React.SetStateAction<order | undefined>>;
@@ -31,9 +32,13 @@ const Actions = (props: IActions) => {
 
     return (
         <div className='actions'>
-            <EditOutlined onClick={handleUpdate} />
-            <DollarOutlined onClick={handlePayment} />
-            <DeleteOutlined onClick={handleDelete} />
+            {/* <EditOutlined onClick={handleUpdate} /> */}
+            <Tooltip title="Thanh toán">
+                <DollarOutlined onClick={handlePayment} />
+            </Tooltip>
+            <Tooltip title="Xóa">
+                <DeleteOutlined onClick={handleDelete} />
+            </Tooltip>
         </div>
     )
 }
